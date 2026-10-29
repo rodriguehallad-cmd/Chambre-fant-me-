@@ -5,47 +5,65 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Installer Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Installer Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Créer projet Android
+      - name: Creer projet
         run: |
           mkdir -p app/src/main/java/com/fantome/app
           mkdir -p app/src/main/assets
           cp index.html app/src/main/assets/
           echo "include ':app'" > settings.gradle
           cat > app/build.gradle << 'EOF'
-          plugins { id 'com.android.application' }
+          plugins { id 'com.android.application' version '8.1.0' }
           android {
-            compileSdk 33
-            defaultConfig { applicationId "com.fantome.app"; minSdk 21; targetSdk 33; versionCode 1; versionName "1.0" }
-            buildTypes { release { minifyEnabled false } }
+            namespace 'com.fantome.app'
+            compileSdk 34
+            defaultConfig {
+              applicationId "com.fantome.app"
+              minSdk 21
+              targetSdk 34
+              versionCode 1
+              versionName "1.0"
+            }
           }
-          dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
           EOF
           cat > app/src/main/AndroidManifest.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-            <application android:label="Chambre Fantome" android:theme="@android:style/Theme.NoTitleBar">
-              <activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity>
+            <application android:label="Chambre Fantome">
+              <activity android:name=".MainActivity" android:exported="true">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN"/>
+                  <category android:name="android.intent.category.LAUNCHER"/>
+                </intent-filter>
+              </activity>
             </application>
           </manifest>
           EOF
           cat > app/src/main/java/com/fantome/app/MainActivity.java << 'EOF'
           package com.fantome.app;
-          import android.app.Activity; import android.os.Bundle; import android.webkit.WebView;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebView;
           public class MainActivity extends Activity {
-            protected void onCreate(Bundle b){ super.onCreate(b); WebView w=new WebView(this); w.getSettings().setJavaScriptEnabled(true); w.loadUrl("file:///android_asset/index.html"); setContentView(w); }
+            protected void onCreate(Bundle b){
+              super.onCreate(b);
+              WebView w=new WebView(this);
+              w.getSettings().setJavaScriptEnabled(true);
+              w.loadUrl("file:///android_asset/index.html");
+              setContentView(w);
+            }
           }
           EOF
-      - name: Compiler APK
+      - name: Compiler
         run: |
-          cd app
-          gradle wrapper
-          ./gradlew assembleDebug
+          wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip
+          unzip -q gradle-8.5-bin.zip
+          ./gradle-8.5/bin/gradle wrapper
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug
       - name: Sauvegarder APK
         uses: actions/upload-artifact@v4
         with:
