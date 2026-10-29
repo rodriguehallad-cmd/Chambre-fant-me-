@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Chambre Fantôme</title>
+<style>
+body{background:#111;color:white;text-align:center;font-family:sans-serif;padding-top:50px}
+input{padding:10px;border-radius:10px;border:none;width:70%}
+button{padding:12px 25px;margin-top:20px;background:#ff00aa;color:white;border:none;border-radius:10px;font-size:18px}
+#secret{display:none;margin-top:30px;background:#222;padding:20px;border-radius:15px}
+</style>
+</head>
+<body>
+<h1>👻 Chambre Fantôme</h1>
+<p>Entre le code secret</p>
+<input type="password" id="code" placeholder="Code : 1234">
+<br>
+<button onclick="ouvrir()">Ouvrir</button>
+<div id="secret">
+<h2>Bienvenue dans le coffre 🔒</h2>
+<p>Ici tu peux cacher tes photos, vidéos, secrets...</p>
+</div>
+<script>
+function ouvrir(){
+ if(document.getElementById('code').value=='1234'){
+  document.getElementById('secret').style.display='block';
+ } else { alert('Mauvais code'); }
+}
+</script>
+</body>
+  </html>
